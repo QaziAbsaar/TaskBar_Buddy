@@ -1,0 +1,14 @@
+{
+  "name": "humungousaur-agent",
+  "version": "1.0.0",
+  "description": "Desktop AI Agent with Humungousaur roaming on taskbar",
+  "main": "main.js",
+  "scripts": {
+    "start": "set ELECTRON_RUN_AS_NODE=0 && electron .",
+    "dev": "set ELECTRON_RUN_AS_NODE=0 && electron . --dev"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "electron": "^41.1.1"
+  }
+}

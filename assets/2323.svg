@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <defs>
+    <!-- Body gradient - brown/tan muscular look -->
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C4943A"/>
+      <stop offset="50%" stop-color="#A67B2E"/>
+      <stop offset="100%" stop-color="#8B6524"/>
+    </linearGradient>
+    <!-- Darker shade for shadowed areas -->
+    <linearGradient id="darkBodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8B6524"/>
+      <stop offset="100%" stop-color="#6B4E1B"/>
+    </linearGradient>
+    <!-- Belly/lighter underside -->
+    <linearGradient id="bellyGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#D4A84A"/>
+      <stop offset="100%" stop-color="#C4943A"/>
+    </linearGradient>
+    <!-- Omnitrix glow -->
+    <radialGradient id="omnitrixGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#00FF00"/>
+      <stop offset="70%" stop-color="#00CC00"/>
+      <stop offset="100%" stop-color="#009900"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ===== LEGS ===== -->
+  <!-- Left leg -->
+  <path d="M38,115 L34,140 Q33,145 36,148 L44,148 Q47,145 46,140 L48,115 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Left leg muscle definition -->
+  <path d="M40,118 Q37,128 38,138" stroke="#8B6524" stroke-width="1" fill="none" opacity="0.5"/>
+  <!-- Right leg -->
+  <path d="M72,115 L74,140 Q75,145 78,148 L86,148 Q89,145 88,140 L82,115 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Right leg muscle definition -->
+  <path d="M78,118 Q81,128 80,138" stroke="#8B6524" stroke-width="1" fill="none" opacity="0.5"/>
+
+  <!-- Left foot claws -->
+  <path d="M34,147 L31,153 L34,151" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M38,147 L37,154 L40,151" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M42,147 L43,153 L45,150" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <!-- Right foot claws -->
+  <path d="M76,147 L73,153 L76,151" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M80,147 L79,154 L82,151" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M84,147 L85,153 L87,150" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+
+  <!-- ===== TAIL ===== -->
+  <path d="M80,110 Q95,115 105,120 Q112,124 115,118 Q112,112 105,112 Q95,108 82,105" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+
+  <!-- ===== TORSO ===== -->
+  <!-- Main torso - large muscular body -->
+  <path d="M32,60 Q28,70 30,85 Q32,100 35,115 L85,115 Q88,100 90,85 Q92,70 88,60 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Belly plate (lighter underside) -->
+  <path d="M42,65 Q40,80 42,95 Q44,108 48,112 L72,112 Q76,108 78,95 Q80,80 78,65 Z" fill="url(#bellyGrad)" stroke="#A67B2E" stroke-width="0.5" opacity="0.7"/>
+  <!-- Chest muscle lines -->
+  <path d="M60,62 L60,78" stroke="#8B6524" stroke-width="1" opacity="0.4"/>
+  <path d="M48,68 Q54,72 60,70" stroke="#8B6524" stroke-width="0.8" fill="none" opacity="0.3"/>
+  <path d="M72,68 Q66,72 60,70" stroke="#8B6524" stroke-width="0.8" fill="none" opacity="0.3"/>
+  <!-- Ab lines -->
+  <path d="M52,85 L68,85" stroke="#8B6524" stroke-width="0.6" opacity="0.3"/>
+  <path d="M50,93 L70,93" stroke="#8B6524" stroke-width="0.6" opacity="0.3"/>
+  <path d="M49,101 L71,101" stroke="#8B6524" stroke-width="0.6" opacity="0.3"/>
+
+  <!-- ===== OMNITRIX SYMBOL ===== -->
+  <circle cx="60" cy="75" r="7" fill="#111" stroke="#333" stroke-width="1.5"/>
+  <circle cx="60" cy="75" r="5" fill="url(#omnitrixGlow)"/>
+  <!-- Hourglass shape inside -->
+  <path d="M57,72 L60,75 L57,78 Z" fill="#004400"/>
+  <path d="M63,72 L60,75 L63,78 Z" fill="#004400"/>
+  <!-- Green glow effect -->
+  <circle cx="60" cy="75" r="9" fill="none" stroke="#00FF00" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- ===== ARMS ===== -->
+  <!-- Left arm -->
+  <path d="M32,62 Q22,65 18,72 Q14,80 16,90 Q17,95 20,98 L28,96 Q26,90 26,82 Q27,74 32,70 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Left forearm -->
+  <path d="M20,96 Q16,100 14,108 Q13,112 15,115 L24,115 Q25,110 24,104 Q24,100 26,96 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Left bicep definition -->
+  <path d="M26,68 Q22,76 24,86" stroke="#8B6524" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <!-- Left hand claws -->
+  <path d="M14,114 L10,120 L14,118" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M17,115 L14,122 L18,119" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M20,115 L19,122 L23,119" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+
+  <!-- Right arm -->
+  <path d="M88,62 Q98,65 102,72 Q106,80 104,90 Q103,95 100,98 L92,96 Q94,90 94,82 Q93,74 88,70 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Right forearm -->
+  <path d="M100,96 Q104,100 106,108 Q107,112 105,115 L96,115 Q95,110 96,104 Q96,100 94,96 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Right bicep definition -->
+  <path d="M94,68 Q98,76 96,86" stroke="#8B6524" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <!-- Right hand claws -->
+  <path d="M104,114 L108,120 L104,118" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M101,115 L104,122 L100,119" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+  <path d="M98,115 L99,122 L95,119" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.5"/>
+
+  <!-- ===== SHOULDER PADS / MUSCLE ===== -->
+  <ellipse cx="34" cy="62" rx="8" ry="5" fill="url(#darkBodyGrad)" stroke="#6B4E1B" stroke-width="0.5" opacity="0.6"/>
+  <ellipse cx="86" cy="62" rx="8" ry="5" fill="url(#darkBodyGrad)" stroke="#6B4E1B" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- ===== HEAD ===== -->
+  <!-- Neck -->
+  <rect x="50" y="48" width="20" height="14" rx="4" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="0.5"/>
+
+  <!-- Head shape - dinosaur-like with slight snout -->
+  <path d="M40,25 Q38,15 42,8 Q48,2 60,2 Q72,2 78,8 Q82,15 80,25 Q82,32 82,38 Q82,48 78,52 L42,52 Q38,48 38,38 Q38,32 40,25 Z" fill="url(#bodyGrad)" stroke="#6B4E1B" stroke-width="1"/>
+
+  <!-- Brow ridge -->
+  <path d="M42,22 Q50,18 60,19 Q70,18 78,22" stroke="#6B4E1B" stroke-width="2" fill="none"/>
+
+  <!-- Eyes -->
+  <ellipse cx="50" cy="26" rx="5" ry="4" fill="#FFFFCC" stroke="#6B4E1B" stroke-width="0.8"/>
+  <ellipse cx="70" cy="26" rx="5" ry="4" fill="#FFFFCC" stroke="#6B4E1B" stroke-width="0.8"/>
+  <!-- Pupils -->
+  <ellipse cx="51" cy="26" rx="2.5" ry="3" fill="#2D2D0A"/>
+  <ellipse cx="71" cy="26" rx="2.5" ry="3" fill="#2D2D0A"/>
+  <!-- Eye shine -->
+  <circle cx="49" cy="24.5" r="1" fill="white" opacity="0.7"/>
+  <circle cx="69" cy="24.5" r="1" fill="white" opacity="0.7"/>
+
+  <!-- Snout/jaw -->
+  <path d="M44,32 Q42,36 43,42 Q45,48 52,50 L68,50 Q75,48 77,42 Q78,36 76,32" fill="url(#bellyGrad)" stroke="#8B6524" stroke-width="0.5"/>
+
+  <!-- Nostrils -->
+  <ellipse cx="52" cy="34" rx="2" ry="1.5" fill="#6B4E1B"/>
+  <ellipse cx="68" cy="34" rx="2" ry="1.5" fill="#6B4E1B"/>
+
+  <!-- Mouth line (closed, relaxed) -->
+  <path d="M48,42 Q55,45 60,44 Q65,45 72,42" stroke="#6B4E1B" stroke-width="1" fill="none"/>
+
+  <!-- Head crest/ridges -->
+  <path d="M48,5 Q50,1 54,3" stroke="#8B6524" stroke-width="1.2" fill="url(#darkBodyGrad)"/>
+  <path d="M56,3 Q60,0 64,3" stroke="#8B6524" stroke-width="1.2" fill="url(#darkBodyGrad)"/>
+  <path d="M66,3 Q70,1 72,5" stroke="#8B6524" stroke-width="1.2" fill="url(#darkBodyGrad)"/>
+
+  <!-- ===== BACK SPINES ===== -->
+  <path d="M58,4 L56,0 L60,2 Z" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.3" opacity="0.6"/>
+  <path d="M62,4 L64,0 L60,2 Z" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.3" opacity="0.6"/>
+</svg>

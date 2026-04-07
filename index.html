@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      -webkit-app-region: no-drag;
+    }
+
+    #character-container {
+      position: absolute;
+      bottom: 10px;
+      width: 120px;
+      height: 160px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    #character {
+      width: 100%;
+      height: 100%;
+      background-image: url('./assets/humungousaur-idle.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      image-rendering: auto;
+      transition: filter 0.3s;
+    }
+
+    #character.walking {
+      animation: walk-bounce 0.4s ease-in-out infinite;
+    }
+
+    #character.angry {
+      background-image: url('./assets/humungousaur-angry.svg');
+      animation: angry-shake 0.1s ease-in-out infinite;
+      filter: brightness(1.1) saturate(1.3);
+    }
+
+    #character.idle {
+      animation: idle-breathe 2s ease-in-out infinite;
+    }
+
+    @keyframes walk-bounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-8px) rotate(-2deg); }
+      75% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes angry-shake {
+      0%, 100% { transform: translateX(0) scale(1.05); }
+      25% { transform: translateX(-3px) scale(1.08); }
+      50% { transform: translateX(3px) scale(1.05); }
+      75% { transform: translateX(-2px) scale(1.08); }
+    }
+
+    @keyframes idle-breathe {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(1.02); }
+    }
+
+    .speech-bubble {
+      position: absolute;
+      bottom: 170px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a2e;
+      color: #00ff41;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border: 2px solid #00ff41;
+      pointer-events: none;
+    }
+
+    .speech-bubble.visible {
+      opacity: 1;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid #1a1a2e;
+    }
+
+    #anger-effects {
+      position: absolute;
+      pointer-events: none;
+      width: 140px;
+      height: 40px;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #anger-effects.visible {
+      opacity: 1;
+    }
+
+    .anger-symbol {
+      position: absolute;
+      font-size: 18px;
+      animation: float-anger 0.6s ease-in-out infinite;
+    }
+
+    .anger-symbol:nth-child(1) { left: 10px; animation-delay: 0s; }
+    .anger-symbol:nth-child(2) { left: 50px; animation-delay: 0.2s; }
+    .anger-symbol:nth-child(3) { left: 90px; animation-delay: 0.4s; }
+
+    @keyframes float-anger {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 1; }
+      50% { transform: translateY(-10px) scale(1.3); opacity: 0.7; }
+    }
+
+    .click-ring {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border: 3px solid #00ff41;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .click-ring.animate {
+      animation: ring-expand 0.5s ease-out forwards;
+    }
+
+    @keyframes ring-expand {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="character-container">
+    <div id="anger-effects">
+      <span class="anger-symbol">&#x1F4A2;</span>
+      <span class="anger-symbol">&#x1F4A2;</span>
+      <span class="anger-symbol">&#x1F4A2;</span>
+    </div>
+    <div class="speech-bubble" id="speech-bubble">GRRRR!</div>
+    <div id="character" class="idle"></div>
+    <div class="click-ring" id="click-ring"></div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    const container = document.getElementById('character-container');
+    const character = document.getElementById('character');
+    const speechBubble = document.getElementById('speech-bubble');
+    const angerEffects = document.getElementById('anger-effects');
+    const clickRing = document.getElementById('click-ring');
+
+    let posX = 200;
+    let direction = 1;
+    let isWalking = true;
+    let isAngry = false;
+    let walkSpeed = 1.5;
+    let screenWidth = window.innerWidth;
+    let pauseTimer = null;
+    let isPaused = false;
+
+    const idleMessages = [
+      "Need something?",
+      "I'm watching...",
+      "Click me!",
+      "*yawns*",
+      "Patrolling...",
+      "All clear!"
+    ];
+
+    const angryMessages = [
+      "GRRRR! DON'T TOUCH ME!",
+      "BACK OFF!",
+      "I'LL SMASH YOU!",
+      "RAAAAWR!",
+      "STOP IT!",
+      "YOU WANT TO FIGHT?!"
+    ];
+
+    function updatePosition() {
+      if (!isPaused && !isAngry) {
+        posX += walkSpeed * direction;
+
+        if (posX > screenWidth - 140) {
+          direction = -1;
+          container.style.transform = 'scaleX(-1)';
+          speechBubble.style.transform = 'translateX(-50%) scaleX(-1)';
+        } else if (posX < 20) {
+          direction = 1;
+          container.style.transform = 'scaleX(1)';
+          speechBubble.style.transform = 'translateX(-50%) scaleX(1)';
+        }
+
+        container.style.left = posX + 'px';
+
+        if (Math.random() < 0.002) {
+          pauseAndIdle();
+        }
+      }
+
+      requestAnimationFrame(updatePosition);
+    }
+
+    function pauseAndIdle() {
+      isPaused = true;
+      isWalking = false;
+      character.classList.remove('walking');
+      character.classList.add('idle');
+
+      if (Math.random() < 0.4) {
+        showSpeech(idleMessages[Math.floor(Math.random() * idleMessages.length)]);
+      }
+
+      pauseTimer = setTimeout(() => {
+        isPaused = false;
+        isWalking = true;
+        character.classList.remove('idle');
+        character.classList.add('walking');
+        hideSpeech();
+      }, 2000 + Math.random() * 3000);
+    }
+
+    function showSpeech(text) {
+      speechBubble.textContent = text;
+      speechBubble.classList.add('visible');
+    }
+
+    function hideSpeech() {
+      speechBubble.classList.remove('visible');
+    }
+
+    container.addEventListener('mouseenter', () => {
+      ipcRenderer.send('set-ignore-mouse', false);
+      isAngry = true;
+      character.classList.remove('walking', 'idle');
+      character.classList.add('angry');
+      angerEffects.classList.add('visible');
+      showSpeech(angryMessages[Math.floor(Math.random() * angryMessages.length)]);
+    });
+
+    container.addEventListener('mouseleave', () => {
+      ipcRenderer.send('set-ignore-mouse', true, { forward: true });
+      isAngry = false;
+      character.classList.remove('angry');
+      angerEffects.classList.remove('visible');
+      hideSpeech();
+
+      if (isWalking) {
+        character.classList.add('walking');
+      } else {
+        character.classList.add('idle');
+      }
+    });
+
+    container.addEventListener('click', () => {
+      clickRing.classList.remove('animate');
+      void clickRing.offsetWidth;
+      clickRing.classList.add('animate');
+      ipcRenderer.send('open-command-panel');
+    });
+
+    character.classList.add('walking');
+    isWalking = true;
+    container.style.left = posX + 'px';
+    requestAnimationFrame(updatePosition);
+
+    window.addEventListener('resize', () => {
+      screenWidth = window.innerWidth;
+    });
+  </script>
+</body>
+</html>

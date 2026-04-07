@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="headGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C4943A"/>
+      <stop offset="100%" stop-color="#8B6524"/>
+    </linearGradient>
+    <linearGradient id="snoutGrad" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#D4A84A"/>
+      <stop offset="100%" stop-color="#C4943A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Head shape -->
+  <path d="M6,12 Q5,6 8,3 Q11,0 16,0 Q21,0 24,3 Q27,6 26,12 Q27,16 27,20 Q27,26 24,28 L8,28 Q5,26 5,20 Q5,16 6,12 Z" fill="url(#headGrad)" stroke="#6B4E1B" stroke-width="0.8"/>
+
+  <!-- Brow ridge -->
+  <path d="M8,11 Q12,9 16,10 Q20,9 24,11" stroke="#6B4E1B" stroke-width="1.5" fill="none"/>
+
+  <!-- Eyes -->
+  <ellipse cx="12" cy="14" rx="3" ry="2.5" fill="#FFFFCC" stroke="#6B4E1B" stroke-width="0.5"/>
+  <ellipse cx="20" cy="14" rx="3" ry="2.5" fill="#FFFFCC" stroke="#6B4E1B" stroke-width="0.5"/>
+  <!-- Pupils -->
+  <ellipse cx="12.5" cy="14" rx="1.5" ry="2" fill="#2D2D0A"/>
+  <ellipse cx="20.5" cy="14" rx="1.5" ry="2" fill="#2D2D0A"/>
+
+  <!-- Snout -->
+  <path d="M9,17 Q8,20 9,23 Q10,26 14,27 L18,27 Q22,26 23,23 Q24,20 23,17" fill="url(#snoutGrad)" stroke="#8B6524" stroke-width="0.4"/>
+
+  <!-- Nostrils -->
+  <circle cx="13" cy="19" r="1" fill="#6B4E1B"/>
+  <circle cx="19" cy="19" r="1" fill="#6B4E1B"/>
+
+  <!-- Mouth -->
+  <path d="M11,23 Q14,25 16,24 Q18,25 21,23" stroke="#6B4E1B" stroke-width="0.8" fill="none"/>
+
+  <!-- Head crests -->
+  <path d="M11,2 L12,0 L14,2" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.3"/>
+  <path d="M15,1 L16,-1 L17,1" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.3"/>
+  <path d="M18,2 L20,0 L21,2" fill="#8B6524" stroke="#6B4E1B" stroke-width="0.3"/>
+</svg>
