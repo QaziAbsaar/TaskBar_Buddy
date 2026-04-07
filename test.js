@@ -29,7 +29,7 @@ console.log('\n=== File Existence ===');
 const requiredFiles = [
   'main.js', 'llm.js', 'index.html', 'command.html',
   'settings.html', 'package.json', 'start.bat', 'start.ps1',
-  'assets/humungousaur-idle.svg', 'assets/humungousaur-angry.svg', 'assets/tray-icon.svg',
+  'assets/Left_TO_Right.gif', 'assets/Right_To_left.gif', 'assets/tray-icon.svg',
   'node_modules/electron/dist/electron.exe',
   'node_modules/@google/generative-ai/dist/index.js'
 ];
@@ -354,21 +354,23 @@ test('shows save status feedback', () => {
   assert(settingsCode.includes('result.success'));
 });
 
-console.log('\n=== SVG Assets ===');
+console.log('\n=== GIF Assets ===');
 
-['humungousaur-idle.svg', 'humungousaur-angry.svg', 'tray-icon.svg'].forEach(file => {
-  test(`${file} is valid SVG`, () => {
-    const svg = fs.readFileSync(path.join(ROOT, 'assets', file), 'utf-8');
-    assert(svg.includes('<svg'));
-    assert(svg.includes('</svg>'));
-    assert(svg.includes('xmlns="http://www.w3.org/2000/svg"'));
+['Left_TO_Right.gif', 'Right_To_left.gif'].forEach(file => {
+  test(`${file} is valid GIF`, () => {
+    const fileBuffer = fs.readFileSync(path.join(ROOT, 'assets', file));
+    const header = fileBuffer.subarray(0, 6).toString('ascii');
+    assert(header === 'GIF87a' || header === 'GIF89a', `Invalid GIF header for ${file}: ${header}`);
   });
 });
 
-test('angry SVG has red eyes and teeth', () => {
-  const svg = fs.readFileSync(path.join(ROOT, 'assets', 'humungousaur-angry.svg'), 'utf-8');
-  assert(svg.includes('#FF4444') || svg.includes('#FF0000'));
-  assert(svg.includes('FFFFDD') || svg.includes('teeth'));
+console.log('\n=== SVG Assets ===');
+
+test('tray-icon.svg is valid SVG', () => {
+  const svg = fs.readFileSync(path.join(ROOT, 'assets', 'tray-icon.svg'), 'utf-8');
+  assert(svg.includes('<svg'));
+  assert(svg.includes('</svg>'));
+  assert(svg.includes('xmlns="http://www.w3.org/2000/svg"'));
 });
 
 console.log('\n=== Launchers ===');

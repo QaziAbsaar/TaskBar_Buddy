@@ -1,6 +1,6 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const SYSTEM_PROMPT = `You are Humungousaur, the powerful alien from Ben 10's Omnitrix. You are now living inside a user's Windows PC as their personal AI desktop agent.
+const DEFAULT_SYSTEM_PROMPT = `You are Humungousaur, the powerful alien from Ben 10's Omnitrix. You are now living inside a user's Windows PC as their personal AI desktop agent.
 
 PERSONALITY:
 - You speak in a tough, confident, slightly gruff but friendly tone
@@ -33,13 +33,33 @@ RULES:
 let genAI = null;
 let chat = null;
 let model = null;
+let currentLLMOptions = {
+  modelName: 'gemini-2.0-flash',
+  temperature: 0.7,
+  systemPrompt: DEFAULT_SYSTEM_PROMPT,
+};
 
-function initialize(apiKey) {
+function initialize(apiKey, options = {}) {
+  const modelName = (options.model || 'gemini-2.0-flash').trim();
+  const temp = Number(options.temperature);
+  const temperature = Number.isFinite(temp) ? Math.min(Math.max(temp, 0), 1) : 0.7;
+  const customPrompt = typeof options.systemPrompt === 'string' ? options.systemPrompt.trim() : '';
+  const systemPrompt = customPrompt || DEFAULT_SYSTEM_PROMPT;
+
+  currentLLMOptions = {
+    modelName,
+    temperature,
+    systemPrompt,
+  };
+
   genAI = new GoogleGenerativeAI(apiKey);
-  model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  model = genAI.getGenerativeModel({ model: modelName });
   chat = model.startChat({
     history: [],
-    systemInstruction: SYSTEM_PROMPT,
+    systemInstruction: systemPrompt,
+    generationConfig: {
+      temperature,
+    },
   });
 }
 
@@ -77,9 +97,12 @@ function resetChat() {
   if (model) {
     chat = model.startChat({
       history: [],
-      systemInstruction: SYSTEM_PROMPT,
+      systemInstruction: currentLLMOptions.systemPrompt,
+      generationConfig: {
+        temperature: currentLLMOptions.temperature,
+      },
     });
   }
 }
 
-module.exports = { initialize, isInitialized, sendMessage, resetChat };
+module.exports = { initialize, isInitialized, sendMessage, resetChat, DEFAULT_SYSTEM_PROMPT };

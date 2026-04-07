@@ -12,20 +12,36 @@ let commandWindow;
 let settingsWindow;
 
 const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json');
+const DEFAULT_CONFIG = {
+  apiKey: '',
+  model: 'gemini-2.0-flash',
+  temperature: 0.7,
+  systemPrompt: '',
+};
 
 function loadConfig() {
   try {
     if (fs.existsSync(CONFIG_PATH)) {
-      return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+      const parsed = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
+      return { ...DEFAULT_CONFIG, ...parsed };
     }
   } catch (e) { }
-  return {};
+  return { ...DEFAULT_CONFIG };
 }
 
 function saveConfig(config) {
   const dir = path.dirname(CONFIG_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+}
+
+function initializeLLMFromConfig(config) {
+  if (!config.apiKey) return;
+  llm.initialize(config.apiKey, {
+    model: config.model,
+    temperature: config.temperature,
+    systemPrompt: config.systemPrompt,
+  });
 }
 
 function createWindow() {
@@ -95,10 +111,10 @@ function createSettingsWindow() {
   const { width, height } = primaryDisplay.workAreaSize;
 
   settingsWindow = new BrowserWindow({
-    width: 450,
-    height: 280,
-    x: Math.floor(width / 2 - 225),
-    y: Math.floor(height / 2 - 140),
+    width: 560,
+    height: 640,
+    x: Math.floor(width / 2 - 280),
+    y: Math.floor(height / 2 - 320),
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -177,9 +193,7 @@ function executeAction(action) {
 
 app.whenReady().then(() => {
   const config = loadConfig();
-  if (config.apiKey) {
-    llm.initialize(config.apiKey);
-  }
+  initializeLLMFromConfig(config);
 
   createWindow();
 
@@ -220,14 +234,23 @@ ipcMain.on('open-command-panel', () => {
   createCommandWindow();
 });
 
+ipcMain.on('open-settings', () => {
+  createSettingsWindow();
+});
+
 ipcMain.on('check-api-key', (event) => {
   event.reply('api-key-status', llm.isInitialized());
 });
 
 ipcMain.on('save-api-key', (event, apiKey) => {
   try {
-    llm.initialize(apiKey);
-    saveConfig({ apiKey });
+    const current = loadConfig();
+    const updated = {
+      ...current,
+      apiKey,
+    };
+    initializeLLMFromConfig(updated);
+    saveConfig(updated);
     event.reply('api-key-saved', { success: true });
     if (commandWindow && !commandWindow.isDestroyed()) {
       commandWindow.webContents.send('api-key-status', true);
@@ -240,6 +263,40 @@ ipcMain.on('save-api-key', (event, apiKey) => {
 ipcMain.on('get-api-key', (event) => {
   const config = loadConfig();
   event.reply('current-api-key', config.apiKey || '');
+});
+
+ipcMain.on('get-settings', (event) => {
+  const config = loadConfig();
+  event.reply('current-settings', config);
+});
+
+ipcMain.on('save-settings', (event, settings) => {
+  try {
+    const merged = {
+      ...DEFAULT_CONFIG,
+      ...loadConfig(),
+      ...settings,
+    };
+
+    merged.model = (merged.model || DEFAULT_CONFIG.model).trim();
+    const temp = Number(merged.temperature);
+    merged.temperature = Number.isFinite(temp) ? Math.min(Math.max(temp, 0), 1) : DEFAULT_CONFIG.temperature;
+    merged.systemPrompt = typeof merged.systemPrompt === 'string' ? merged.systemPrompt : '';
+
+    if (merged.apiKey) {
+      initializeLLMFromConfig(merged);
+    }
+
+    saveConfig(merged);
+    event.reply('settings-saved', { success: true });
+
+    const isReady = !!merged.apiKey;
+    if (commandWindow && !commandWindow.isDestroyed()) {
+      commandWindow.webContents.send('api-key-status', isReady);
+    }
+  } catch (e) {
+    event.reply('settings-saved', { success: false, error: e.message });
+  }
 });
 
 ipcMain.on('chat-message', async (event, message) => {

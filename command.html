@@ -291,6 +291,7 @@
         <h2>Humungousaur<span>AI Agent</span></h2>
       </div>
       <div class="title-actions">
+        <button id="settings-btn" title="Settings">&#9881;</button>
         <button id="reset-btn" title="New Chat">&#8634;</button>
         <button class="close-btn" id="close-btn" title="Close">&times;</button>
       </div>
@@ -319,6 +320,7 @@
     const input = document.getElementById('input');
     const sendBtn = document.getElementById('send-btn');
     const closeBtn = document.getElementById('close-btn');
+    const settingsBtn = document.getElementById('settings-btn');
     const resetBtn = document.getElementById('reset-btn');
     const typing = document.getElementById('typing');
     const statusDot = document.getElementById('status-dot');
@@ -401,6 +403,7 @@
     });
 
     sendBtn.addEventListener('click', send);
+    settingsBtn.addEventListener('click', () => ipcRenderer.send('open-settings'));
     closeBtn.addEventListener('click', () => window.close());
 
     resetBtn.addEventListener('click', () => {

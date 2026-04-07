@@ -108,6 +108,84 @@
       text-decoration: none;
     }
 
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e6edf3;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: rgba(0, 255, 65, 0.4);
+    }
+
+    select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e6edf3;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus {
+      border-color: rgba(0, 255, 65, 0.4);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row .input-group {
+      flex: 1;
+    }
+
+    .key-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .toggle-btn {
+      min-width: 72px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: #c9d1d9;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .range-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .range-wrap input[type="range"] {
+      flex: 1;
+      accent-color: #00ff41;
+    }
+
+    .range-value {
+      min-width: 38px;
+      text-align: right;
+      color: #00ff41;
+      font-size: 12px;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+    }
+
     .btn-row {
       display: flex;
       gap: 8px;
@@ -146,6 +224,16 @@
       color: #e6edf3;
     }
 
+    .btn-secondary {
+      background: rgba(88, 166, 255, 0.12);
+      border-color: rgba(88, 166, 255, 0.3);
+      color: #58a6ff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(88, 166, 255, 0.2);
+    }
+
     .status {
       font-size: 12px;
       text-align: center;
@@ -166,14 +254,44 @@
     <div class="content">
       <div class="input-group">
         <label>Gemini API Key</label>
-        <input type="password" id="api-key" placeholder="AIza..." />
+        <div class="key-row">
+          <input type="password" id="api-key" placeholder="AIza..." />
+          <button class="toggle-btn" id="toggle-key">Show</button>
+        </div>
         <div class="help-text">
           Get a free key at <a href="#" id="link-aistudio">aistudio.google.com/apikey</a>
         </div>
       </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label>Model</label>
+          <select id="model">
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Temperature</label>
+          <div class="range-wrap">
+            <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7" />
+            <span class="range-value" id="temperature-value">0.7</span>
+          </div>
+          <div class="help-text">Lower = focused. Higher = creative.</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Custom System Prompt (Optional)</label>
+        <textarea id="system-prompt" placeholder="Leave blank to use the default Humungousaur personality prompt."></textarea>
+      </div>
+
       <div class="status" id="status"></div>
       <div class="btn-row">
         <button class="btn-cancel" id="cancel-btn">Cancel</button>
+        <button class="btn-secondary" id="defaults-btn">Defaults</button>
         <button class="btn-save" id="save-btn">Save</button>
       </div>
     </div>
@@ -186,12 +304,45 @@
     const saveBtn = document.getElementById('save-btn');
     const cancelBtn = document.getElementById('cancel-btn');
     const closeBtn = document.getElementById('close-btn');
+    const toggleKeyBtn = document.getElementById('toggle-key');
+    const modelSelect = document.getElementById('model');
+    const tempInput = document.getElementById('temperature');
+    const tempValue = document.getElementById('temperature-value');
+    const systemPromptInput = document.getElementById('system-prompt');
+    const defaultsBtn = document.getElementById('defaults-btn');
     const statusEl = document.getElementById('status');
     const linkAistudio = document.getElementById('link-aistudio');
 
-    ipcRenderer.send('get-api-key');
-    ipcRenderer.on('current-api-key', (e, key) => {
-      if (key) apiKeyInput.value = key;
+    const DEFAULTS = {
+      model: 'gemini-2.0-flash',
+      temperature: 0.7,
+      systemPrompt: ''
+    };
+
+    function setStatus(text, type) {
+      statusEl.textContent = text;
+      statusEl.className = type ? `status ${type}` : 'status';
+    }
+
+    function updateTempLabel() {
+      tempValue.textContent = Number(tempInput.value).toFixed(1);
+    }
+
+    function applyDefaults() {
+      modelSelect.value = DEFAULTS.model;
+      tempInput.value = String(DEFAULTS.temperature);
+      systemPromptInput.value = DEFAULTS.systemPrompt;
+      updateTempLabel();
+    }
+
+    ipcRenderer.send('get-settings');
+    ipcRenderer.on('current-settings', (e, settings) => {
+      if (!settings) return;
+      apiKeyInput.value = settings.apiKey || '';
+      modelSelect.value = settings.model || DEFAULTS.model;
+      tempInput.value = String(typeof settings.temperature === 'number' ? settings.temperature : DEFAULTS.temperature);
+      systemPromptInput.value = settings.systemPrompt || '';
+      updateTempLabel();
     });
 
     linkAistudio.addEventListener('click', (e) => {
@@ -200,26 +351,42 @@
     });
 
     saveBtn.addEventListener('click', () => {
-      const key = apiKeyInput.value.trim();
-      if (!key) {
-        statusEl.textContent = 'Please enter an API key';
-        statusEl.className = 'status error';
+      const payload = {
+        apiKey: apiKeyInput.value.trim(),
+        model: modelSelect.value,
+        temperature: Number(tempInput.value),
+        systemPrompt: systemPromptInput.value.trim(),
+      };
+
+      if (!payload.apiKey) {
+        setStatus('Please enter an API key', 'error');
         return;
       }
-      statusEl.textContent = 'Saving...';
-      statusEl.className = 'status';
-      ipcRenderer.send('save-api-key', key);
+
+      setStatus('Saving settings...', '');
+      ipcRenderer.send('save-settings', payload);
     });
 
-    ipcRenderer.on('api-key-saved', (e, result) => {
+    ipcRenderer.on('settings-saved', (e, result) => {
       if (result.success) {
-        statusEl.textContent = 'Saved! Humungousaur is powered up!';
-        statusEl.className = 'status success';
+        setStatus('Saved! Humungousaur is powered up!', 'success');
         setTimeout(() => window.close(), 1200);
       } else {
-        statusEl.textContent = result.error || 'Failed to save';
-        statusEl.className = 'status error';
+        setStatus(result.error || 'Failed to save settings', 'error');
       }
+    });
+
+    toggleKeyBtn.addEventListener('click', () => {
+      const show = apiKeyInput.type === 'password';
+      apiKeyInput.type = show ? 'text' : 'password';
+      toggleKeyBtn.textContent = show ? 'Hide' : 'Show';
+    });
+
+    tempInput.addEventListener('input', updateTempLabel);
+
+    defaultsBtn.addEventListener('click', () => {
+      applyDefaults();
+      setStatus('Defaults loaded. Click Save to apply.', '');
     });
 
     cancelBtn.addEventListener('click', () => window.close());
